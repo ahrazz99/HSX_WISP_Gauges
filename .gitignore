@@ -1,0 +1,15 @@
+# Ignore generated data & caches
+cache/*
+!cache/.gitkeep
+
+# Ignore all generated files in output subfolders
+output/*
+
+# Preserve directory structure in remote repository
+!output/**/.gitkeep
+
+# Ignore Python runtime files
+__pycache__/
+*.pyc
+*.egg-info/
+.venv
