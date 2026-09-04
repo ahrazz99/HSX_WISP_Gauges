@@ -80,12 +80,9 @@ print(f"Running with model: {args.model}")
 ClickedCentroids = []
 
 
-
 '''
 bfield.eval() is in r,z,phi, and is also in radians !!!! just so you know...
 '''
-
-
 
 #pv.set_jupyter_backend('trame') # attempt to get this to run with GPU -- ignore
 '''
@@ -311,8 +308,6 @@ def main():
     # We will separate things out into quadrants to make selection easy
     # starting from the loaded front facing quandrant and moving CW
 
- 
-
     ##### GUI window and selector ##### 
     if InteractiveMode:     
         plotter.enable_surface_point_picking(callback=my_callback, show_point=True)
@@ -323,7 +318,6 @@ def main():
             print('\nThe centroids of each port is: ',end="\n\n")
             print(ClickedCentroids)
     else:
-
     ########### In-Terminal User Interface (non-Visual) ################################
         def PortSelector(portnumber): # inut whould be of format : [x, y, z] (assuming cartisian coords)
             port_output = my_callback(portnumber)
@@ -386,7 +380,6 @@ def main():
             Port_Names = json.load(f)
 
         for i in Port_Names: # to do every prot for eval. 
-            
             print(f" Port: {i}")
             chosen_port = i 
             try: 

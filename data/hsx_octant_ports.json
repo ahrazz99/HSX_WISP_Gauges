@@ -1,0 +1,80 @@
+{
+  "12_TT": {
+    "position": [1.37013323, 0.06461841, 0.34234056],
+    "normal": [0.0, 0.0, 1.0],
+    "shape": "circular",
+    "dimensions": {"radius": 0.038}
+  },
+  "12_MT": {
+    "position": [1.5361697, 0.15705855, 0.18934832],
+    "normal": [0.0, 0.0, 1.0],
+    "shape": "circular",
+    "dimensions": {"radius": 0.038}
+  },
+  "12_MM": {
+    "position": [1.54150325, 0.21199289, 0.08192894],
+    "normal": [0.0, 0.0, 1.0],
+    "shape": "circular",
+    "dimensions": {"radius": 0.038}
+  },
+  "12_MB": {
+    "position": [1.52012561, 0.25978317, -0.02803732],
+    "normal": [0.0, 0.0, 1.0],
+    "shape": "circular",
+    "dimensions": {"radius": 0.038}
+  },
+  "23_TT": {
+    "position": [1.19444429, 0.21033671, 0.37424777],
+    "normal": [0.0, 0.0, 1.0],
+    "shape": "circular",
+    "dimensions": {"radius": 0.038}
+  },
+  "23_MT": {
+    "position": [1.36454599, 0.3237585, 0.31633814],
+    "normal": [0.0, 0.0, 1.0],
+    "shape": "rectangular",
+    "dimensions": {"width": 0.08, "height": 0.12}
+  },
+  "23_MM": {
+    "position": [1.39608935, 0.38656896, 0.21893418],
+    "normal": [0.0, 0.0, 1.0],
+    "shape": "circular",
+    "dimensions": {"radius": 0.038}
+  },
+  "23_MB": {
+    "position": [1.40813631, 0.43454497, 0.10776593],
+    "normal": [0.0, 0.0, 1.0],
+    "shape": "circular",
+    "dimensions": {"radius": 0.038}
+  },
+  "23_BB": {
+    "position": [1.37853481, 0.41156213, -0.11067955],
+    "normal": [0.0, 0.0, 1.0],
+    "shape": "circular",
+    "dimensions": {"radius": 0.038}
+  },
+  "34_MT": {
+    "position": [1.20455327, 0.51165693, 0.2771323],
+    "normal": [0.0, 0.0, 1.0],
+    "shape": "circular",
+    "dimensions": {"radius": 0.038}
+  },
+  "56_TT": {
+    "position": [0.76632101, 0.62503774, 0.25787352],
+    "normal": [0.0, 0.0, 1.0],
+    "shape": "circular",
+    "dimensions": {"radius": 0.038}
+  },
+  "56_MB": {
+    "position": [1.03310999, 0.80307657, 0.00374969],
+    "normal": [0.0, 0.0, 1.0],
+    "shape": "circular",
+    "dimensions": {"radius": 0.038}
+  },
+  "56_IN": {
+    "position": [0.74949781, 0.42783281, 0.03118502],
+    "normal": [0.0, 0.0, 1.0],
+    "shape": "circular",
+    "dimensions": {"radius": 0.038}
+  }
+}
