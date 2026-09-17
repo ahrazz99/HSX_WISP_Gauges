@@ -18,7 +18,7 @@ Plan Moving forward (As of 09/03/2026):
 
 Project Structure:
 
-'''
+```text
 magnetic_analysis/
 │
 ├── data/                            # Raw data & config inputs
@@ -55,7 +55,7 @@ magnetic_analysis/
 │
 ├── pyproject.toml                   # Dependencies and environment setup
 └── README.md                        # Quickstart instructions  
-'''
+```
 
 ## TODO
 
