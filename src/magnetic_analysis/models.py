@@ -6,6 +6,8 @@ This file contains class data
 from dataclasses import dataclass, field
 from typing import Dict, List, Tuple, Union, Optional
 from pathlib import Path
+from flare import model as flare_model
+from flare.analysis import bfield as flare_bfield
 import numpy as np
 
 
@@ -103,43 +105,17 @@ Encapsulates the magnetic configuration state and vectorized field evaluation
 """
 class MagneticModel:
 
-    # HSX Configuration Presets
-    CONFIG_PRESETS = {
-        "QHS": {"main_scale": 1.0, "aux_scale": 0.0},
-        "HILL": {"main_scale": 1.0, "aux_scale": 0.10},
-        "WELL": {"main_scale": 1.0, "aux_scale": -0.10},
-        "MIRROR": {"main_scale": 1.0, "aux_scale": 0.0, "mirror_scale":0.20}
-    }
-
-    def __init__(
-            self,
-            grid_path: Union[str, Path],
-            config_name: str = "QHS",
-            custom_scales: Optional[Dict[str, float]] = None
-    ):
-        self.grid_path = Path(grid_path)
-        self.config_name = config_name.upper()
+    def __init__(self, model_path: Union[str, Path], name: str = "qhs"):
+        self.model_path = Path(model_path)
+        self.name = name
+        self._load_model()
 
         #Check that grid path is valid
-        if not self.grid_path.exists():
-            raise FileNotFoundError(f"Magnetic grid file missing: {self.grid_path}")
-
-        # Coil scaling factors based on preset or custom dictionary
-        if custom_scales is not None:
-            self.coil_scales = custom_scales
-        elif self.config_name in self.CONFIG_PRESETS:
-            self.coil_scales = self.CONFIG_PRESETS[self.config_name]
-        else:
-            raise ValueError(f"Unknown config '{config_name}'. Choose from {list(self.CONFIG_PRESETS.keys())}")
-
+        if not self.model_path.exists():
+            raise FileNotFoundError(f"EMC3 NetCDF Magnetic data file missing: {self.model_path}")
+        
         self._grid_data = self._load_grid()
 
-    """
-    Loads and caches magnetic grid data (.mgrid or binary array) into memory
-    """
-    def _load_grid(self) -> Dict[str, np.ndarray]:
-        # Replace placeholder with actual file parsing (e.g., scipy.io.netcdf, h5py, or numpy)
-        return {"path": str(self.grid_path)}
 
     """
     Evaluates B = (Bx, By, Bz) in Tesla for spatial coordinates.
@@ -154,3 +130,26 @@ class MagneticModel:
     np.ndarray
         magnetic field vectors matching input shape (3,) or (N, 3)
     """
+    def evaluate_bfield(self, points: np.ndarray) -> np.ndarray:
+        pts = np.asarray(points, dtype=float)
+        orig_shape = pts.shape
+
+        # Normalize 1D (3,) inputs to 2D (1,3) for uniform processing
+        if pts.ndim == 1:
+            if pts.shape[0] != 3:
+                raise ValueError(f"Coordinate vector must have length 3, got {pts.shape[0]}")
+            pts = pts.reshape(1,3)
+        elif pts.ndim != 2 or pts.shape[1] != 3:
+            raise ValueError(f"Points array must have shape (N, 3), got {pts.shape}")
+
+        # Place vector interpolation logic here (e.g. trilinear interpolation over grid)
+        b_vectors = np.zeros_like(pts)
+
+        return b_vectors.reshape(orig_shape)
+
+    """
+    Returns magnetic field strength |B| in Tesla for given coordinates.
+    """
+    def evaluate_magnitude(self, points: np.ndarray) -> np.ndarray:
+        b_vecs = self.evaluate_bfield(points)
+        return np.linalg.norm(b_vecs, axis=-1)

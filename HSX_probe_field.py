@@ -107,7 +107,7 @@ Version 3.0
 '''
 def main():
     ########### LIST of PORTS ################
-    with open("max_port_positions.json", "r") as f:
+    with open("data/max_port_positions.json", "r") as f:
         port_dict = json.load(f)
     '''
     NOTES: 
