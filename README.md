@@ -57,6 +57,13 @@ magnetic_analysis/
 └── README.md                        # Quickstart instructions  
 ```
 
+```
+Plan:
+- Start building the framework of the classes first. 
+- Pull all necessary math from Max's code - check if necessary - and implement into helper modules
+- Build front facing script
+```
+
 ## TODO
 
     - Begin implementation 
