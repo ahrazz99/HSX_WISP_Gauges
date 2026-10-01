@@ -89,8 +89,47 @@ class PortManager:
         occupant = self.ports[port_name].uninstall()
         return occupant
 
-    
-            
-
+    def get_port_geometry(self, port_name) -> tuple[tuple[float, float, float], float]:
+        """
+        Request data on the port position and diameter
         
+        Args:
+            port_name: string representation of the desired port object to pull information from
+        
+        Returns:
+            a tuple containing the position (as a tuple) and the diameter as a float
+        
+        Raises
+            ValueError if the given port does not exist in the database. 
+        """
+        if port_name not in self.ports:
+            raise ValueError(f"Port {port_name} does not exist in the port manager's data.")
+        return self.ports[port_name].position, self.ports[port_name].diameter
+
+    def remove_port(self, port_name) -> Port | None:
+        """
+        Removes the stated port from the database.
+        
+        Args:
+            port_name: string representation of the desired port object to remove
+
+        Returns:
+            The removed port as an object or None if the port did not exist 
+        """
+        if port_name not in self.ports:
+            return None
+        return self.ports.pop(port_name)
+
+    def clear_ports(self) -> Dict[Port]:
+        """
+        Removes all ports from the port manager
+
+        Returns:
+            The whole port database as a dictionary
+        """
+        ports = self.ports
+        self.ports = {}
+        return ports
+        
+
 
