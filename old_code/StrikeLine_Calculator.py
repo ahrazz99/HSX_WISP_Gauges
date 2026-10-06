@@ -390,6 +390,8 @@ def cartesian_to_cylindrical(x, y, z, Deg=True):
     return r, z, phi
 ###################################################
 
+
+#This block of code just converts mgrid files from cylindrical to cartesian
 Cart_Coords_Magnetic_axis = []
 if mgrid == True:
     # for coord in MagneticAxis_mgrid:
@@ -414,6 +416,7 @@ else:
 print("here is the list")
 print(Cart_Coords_Magnetic_axis[0])
 
+#This seems to be generating a vector pointing into the system
 def StrikeLine_Line_Vector(Toroidal_angle, Poloidal_angle) : # both in radians
 
         # Convert radians to degrees 
