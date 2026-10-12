@@ -10,25 +10,25 @@ The code is currently in the process of development and has not been tested or e
 
 ## Current Project Status
 
-- [] Implementation of v1 of class/object structure for code background processes
-  - [] MagneticModel class
+- [ ] Implementation of v1 of class/object structure for code background processes
+  - [ ] MagneticModel class
     - [x] Object Attribute design
     - [x] Methods
     - [x] Loading and unloading of memory handling
-    - [] Biot-Savart magnetic field inputs
-    - [] VMEC file inputs
+    - [ ] Biot-Savart magnetic field inputs
+    - [ ] VMEC file inputs
   - [x] PortManager class
   - [x] Port class
-  - [] PhysicalModel class
-    - [] the actual code
+  - [ ] PhysicalModel class
+    - [ ] the actual code
     - [x] datafiles needed
-  - [] Result class
-- [] Implementation of helper/util features necessary for code
-  - [] geometry.py - handles complex geometrically related calculations (like transformations)
-  - [] io.py - handles input and output of data
-  - [] cache.py - handles development of a cache to allow fast re-calculations of necessary data to increase efficiency
-  - [] visualizer.py - handles visualization via matplotlib and pyvista
-- [] Testing of class structure
-- [] Design and testing of example scripts
-- [] Implementation of features not currently available with FLARE (i.e. VMEC file input handling)
-- [] Implementation of FIREFLY instead of FLARE
+  - [x] Result class - Removing 
+- [ ] Implementation of helper/util features necessary for code
+  - [ ] geometry.py - handles complex geometrically related calculations (like transformations)
+  - [ ] io.py - handles input and output of data
+  - [ ] cache.py - handles development of a cache to allow fast re-calculations of necessary data to increase efficiency
+  - [ ] visualizer.py - handles visualization via matplotlib and pyvista
+- [ ] Testing of class structure
+- [ ] Design and testing of example scripts
+- [ ] Implementation of features not currently available with FLARE (i.e. VMEC file input handling)
+- [ ] Implementation of FIREFLY instead of FLARE
