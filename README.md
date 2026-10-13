@@ -32,3 +32,25 @@ The code is currently in the process of development and has not been tested or e
 - [ ] Design and testing of example scripts
 - [ ] Implementation of features not currently available with FLARE (i.e. VMEC file input handling)
 - [ ] Implementation of FIREFLY instead of FLARE
+
+### manifest.json inputs
+
+- metadata
+  - run_id
+  - format_version
+  - magnetic model hash
+  - calculations hash - lsit for each calculation
+  - date
+  - time began
+  - time concluded
+  - total time
+  - simulation success?
+- input data:
+  - base_magnetic_configuration
+  - percent_configuration
+  - port input data location
+  - calculations performed
+- output data -> per calculation performed:
+  - calculation name
+  - success?
+  - list of data outputs and file locations
