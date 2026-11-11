@@ -19,8 +19,8 @@ The code is currently in the process of development and has not been tested or e
     - [ ] VMEC file inputs
   - [x] PortManager class
   - [x] Port class
-  - [ ] PhysicalModel class
-    - [ ] the actual code
+  - [X] PhysicalModel class
+    - [X] the actual code
     - [x] datafiles needed
   - [x] Result class - Removing 
 - [ ] Implementation of helper/util features necessary for code
@@ -28,7 +28,7 @@ The code is currently in the process of development and has not been tested or e
   - [ ] io.py - handles input and output of data
   - [ ] cache.py - handles development of a cache to allow fast re-calculations of necessary data to increase efficiency
   - [ ] visualizer.py - handles visualization via matplotlib and pyvista
-- [ ] Testing of class structure
+- [X] Testing of class structure
 - [ ] Design and testing of example scripts
 - [ ] Implementation of features not currently available with FLARE (i.e. VMEC file input handling)
 - [ ] Implementation of FIREFLY instead of FLARE

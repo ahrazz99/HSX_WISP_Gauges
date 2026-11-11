@@ -5,9 +5,21 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "wisp"
 version = "0.1.0"
+description = "Magnetic analysis and diagnostic port management for the HSX stellarator."
+readme = "README.md"
+requires-python = ">=3.10"
 dependencies = [
     "numpy",
     "scipy",
+    "h5py",
+    "pyvista",
+    "matplotlib",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "black",
 ]
 
 [tool.setuptools.packages.find]
