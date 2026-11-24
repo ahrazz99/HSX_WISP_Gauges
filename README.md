@@ -16,7 +16,7 @@ The code is currently in the process of development and has not been tested or e
     - [x] Methods
     - [x] Loading and unloading of memory handling
     - [ ] Biot-Savart magnetic field inputs
-    - [ ] VMEC file inputs
+    - [ ] VMEC file inputs - Leave until later (currently not possible)
   - [x] PortManager class
   - [x] Port class
   - [X] PhysicalModel class

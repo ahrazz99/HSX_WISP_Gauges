@@ -1,108 +1,139 @@
+"""
+src/magnetic_analysis/magnetic_model.py
+Wraps FLARE magnetic field evaluations and fieldline tracing for HSX configurations.
+"""
 
+from pathlib import Path
+from typing import Tuple, Union, Optional
 import numpy as np
+
 from flare import model
 from flare.analysis import bfield
 from flare.analysis import fieldline_trace
-from moose import geometry
-from pathlib import Path
+from util.process import run_isolated
+
+
+def _trace_worker(
+    pt: list,
+    direction: int,
+    ds: float,
+    nsteps: int,
+    stop_at_boundary: bool,
+    coord_sys: str,
+    units: str,
+):
+    """
+    Executes fieldline_trace using the model already loaded in memory.
+    If Fortran calls ERROR STOP, only this worker process terminates.
+    """
+    x, s, bounded = fieldline_trace(
+        x0=pt,
+        idir=direction,
+        ds=ds,
+        nsteps=nsteps,
+        stop_at_boundary=stop_at_boundary,
+        coordinates=coord_sys,
+        angular_units=units,
+    )
+    return np.asarray(x), np.asarray(s), bool(bounded)
 
 
 class MagneticModel:
     """
-    This class generates a builds a magnetic model for a given configuration mesh from FLARE/EMC3-EIRENE
-    
-    Attributes:
-        model: the model name 
-        path: a Path object for the model path
-        __model_loaded: internal boolean for if the model is loaded. 
+    Encapsulates an HSX magnetic configuration loaded through FLARE/EMC3-EIRENE.
     """
-    def __init__(self, model_name, model_path:Path):
-        self.model = model_name
-        self.path = model_path
+
+    def __init__(self, model_name: str, model_path: Union[str, Path]):
+        self.model_name = model_name
+        self.path = str(model_path)
         self.__model_loaded = False
 
-    def load_model(self):
-        """
-        Loads the magnetic model for the MagneticModel object based on the given model path
+    def __enter__(self):
+        self.load_model()
+        return self
 
-        Raises:
-            Exception thrown by flare for the model.load function.
-        """
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.__model_loaded:
+            self.remove_model()
+
+    def is_loaded(self) -> bool:
+        return self.__model_loaded
+
+    def load_model(self) -> None:
         try:
-            model.load(str(self.path))
+            model.load(self.path)
         except Exception as e:
-            print(e)
+            raise RuntimeError(f"Failed to load FLARE model '{self.path}': {e}")
         else:
             self.__model_loaded = True
-        
 
-    def remove_model(self):
-        """
-        Unloads the currently loaded magnetic model.
-        
-        Raises:
-            Runtime error if there is not model loaded.
-        """
+    def remove_model(self) -> None:
         if not self.__model_loaded:
-            raise RuntimeError("The magnetic model must be loaded with the load_model function to remove a model.")
+            raise RuntimeError("Cannot remove model: no magnetic model is currently loaded.")
         model.free()
         self.__model_loaded = False
 
-    def calculate_bfield(self, point:tuple[float,float,float]) -> float:
-        """
-        Calculates the bfield at a given point for the magnetic field as 
-        
-        Args:
-            point: tuple containing the location data to calculate the bfield for. 
-        
-        Returns:
-            the bfield value as a float.
+    def calculate_bfield(
+        self, point: Union[Tuple[float, float, float], np.ndarray]
+    ) -> np.ndarray:
+        """Evaluates magnetic field vector B = [Bx, By, Bz] (in Tesla)."""
+        if not self.__model_loaded:
+            raise RuntimeError("Model must be loaded via load_model() before evaluating B-field.")
 
-        Raises:
-            A runtime error if the magnetic model is not yet loaded.
+        pt = np.asarray(point, dtype=float).flatten()
+        b_vec = bfield.eval(float(pt[0]), float(pt[1]), float(pt[2]))
+        return np.asarray(b_vec, dtype=float)
+
+    def calculate_fieldline(
+        self,
+        initial_position: Union[Tuple[float, float, float], np.ndarray],
+        direction: int = 1,
+        step_size: float = 0.01,
+        num_steps: int = 1000,
+        beyond_boundary: bool = False,
+        coordinate_system: str = "cartesian",
+        angular_coord_units: str = "rad",
+        safe: bool = True,
+        timeout_sec: float = 15.0,
+    ) -> Tuple[bool, Optional[np.ndarray], Optional[np.ndarray], bool]:
+        """
+        Traces a magnetic fieldline through the loaded configuration.
+        If safe=True, uses util.process.run_isolated to prevent Fortran crashes.
         """
         if not self.__model_loaded:
-            raise RuntimeError("The magnetic model must be loaded with the load_model function to calculate the bfield")
-        return bfield.eval(point)
+            raise RuntimeError("Model must be loaded via load_model() before tracing.")
 
-    def calculate_fieldline_forward(self, 
-                                    initial_position:tuple[float,float,float], 
-                                    direction:int,
-                                    step_size:float,
-                                    num_steps:int,
-                                    beyond_boundary:bool,
-                                    coordinate_system:str,
-                                    angular_coord_units:str):
-        """
-        Calculates the field lines for a given point traced around HSX based on the loaded magnetic configuration
-        
-        Args:
-            initial_position: tuple of 3 floats representing the starting position
-            direction: integar (+/- 1) for the direction of the field line tracing
-            step_size: float representing the size of steps to take while calculating the field lines
-            num_steps: total number of steps to take. total distance would be step_size*num_steps
-            beyond_boundary: boolean for if the calculations should end at the boundary of the system
-            coordinate_system: string for the coordinate system for field line trace calculation. Must be cylindrical, cartesian, or toroidal
-            angular_coord_units: string for the angular coordinates. Must be rad or deg
-        
-        Returns:
-            x: 3-D array with the coordinates of the nodes along the traced field lines
-            s: 1-D array of size x.shape[1] with the arc lengths for x
-            bounded: boolean representing if the field line connects to the boundary
-        
-        Raises:
-            A runtime error if the magnetic model is not yet loaded.
-            Any other errors associated with the fieldline_trace function from FLARE.
-        """
-        
-        if not self.__model_loaded:
-            raise RuntimeError("The magnetic model must be loaded with the load_model function to calculate the strikelines")
-        x, s, bounded = fieldline_trace(x0=initial_position,
-                                        idir=direction,
-                                        ds=step_size,
-                                        nsteps=num_steps,
-                                        stop_at_boundary=beyond_boundary,
-                                        coordinates=coordinate_system,
-                                        angular_units=angular_coord_units)
-        return x, s, bounded
-        
+        pt = [float(v) for v in np.asarray(initial_position).flatten()]
+        stop_at_boundary = not beyond_boundary
+
+        if safe:
+            success, result, err = run_isolated(
+                _trace_worker,
+                pt,
+                direction,
+                step_size,
+                num_steps,
+                stop_at_boundary,
+                coordinate_system,
+                angular_coord_units,
+                timeout=timeout_sec,
+            )
+            if success and result is not None:
+                x, s, bounded = result
+                return True, x, s, bounded
+            return False, None, None, False
+
+        # Direct in-process execution
+        try:
+            x, s, bounded = fieldline_trace(
+                x0=pt,
+                idir=direction,
+                ds=step_size,
+                nsteps=num_steps,
+                stop_at_boundary=stop_at_boundary,
+                coordinates=coordinate_system,
+                angular_units=angular_coord_units,
+            )
+            return True, np.asarray(x), np.asarray(s), bool(bounded)
+        except Exception:
+            return False, None, None, False

@@ -47,7 +47,7 @@ class PortManager:
     def generate_symmetric_ports(self) -> None:
         """
         Applies symmetry transformations from util.geometry to base_octant_ports
-        and populates lal ports across octants A through DP into self.ports.
+        and populates all ports across octants A through DP into self.ports.
         """
         if not self.base_octant_ports:
             raise RuntimeError("No base octant ports available to generate symmetry.")
@@ -55,7 +55,18 @@ class PortManager:
         for octant in HSX_OCTANTS:
             transform = get_hsx_octant_transform(octant)
             for base_id, base_port in self.base_octant_ports.items():
-                full_name = f"{octant}{base_id.replace('_', '')}"
+                
+                # Split '12_TT' into interval ('12') and position ('TT')
+                if "_" in base_id:
+                    interval, pos = base_id.split("_", 1)
+                else:
+                    interval, pos = base_id[:2], base_id[2:]
+
+                # For prime octants, flip vertical suffix (TT <-> BB, MT <-> MB)
+                if "P" in octant:
+                    pos = PRIME_SUFFIX_MAP.get(pos, pos)
+
+                full_name = f"{octant}{interval}{pos}"
                 
                 new_pos = transform @ base_port.position
                 new_norm = transform @ base_port.normal
@@ -214,3 +225,26 @@ class PortManager:
             names = [n for n in names if self.ports[n].is_occupied()]
         return list(names)
 
+    def find_closest_port(
+        self, target_point: Union[Tuple[float, float, float], np.ndarray]
+    ) -> Tuple[str, float]:
+        """
+        Finds the nearest HSX port to a given 3D coordinate.
+
+        Args:
+            target_point: [x, y, z] coordinate in meters.
+
+        Returns:
+            (closest_port_name, distance_in_meters)
+        """
+        pt = np.asarray(target_point, dtype=float)
+        min_dist = float("inf")
+        closest_name = None
+
+        for name, port in self.ports.items():
+            dist = float(np.linalg.norm(pt - port.position))
+            if dist < min_dist:
+                min_dist = dist
+                closest_name = name
+
+        return closest_name, min_dist
